@@ -57,7 +57,12 @@ app.use((err, req, res, next) => {
 async function startServer() {
   try {
     // Probar conexión a base de datos
-    await testConnection();
+    const dbConnected = await testConnection();
+    
+    if (!dbConnected) {
+      console.log('⚠️  Servidor iniciará sin conexión a base de datos');
+      console.log('💡 Para conectar a MySQL, configura las credenciales en .env');
+    }
     
     app.listen(port, () => {
       console.log(`\n🚀 Servidor iniciado exitosamente`);
@@ -72,8 +77,6 @@ async function startServer() {
     process.exit(1);
   }
 }
-
-startServer();
 
 startServer();
 

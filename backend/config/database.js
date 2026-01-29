@@ -22,7 +22,7 @@ async function testConnection() {
     connection.release();
     return true;
   } catch (error) {
-    console.error('❌ Error al conectar a MySQL:', error.message);
+    console.warn('⚠️  MySQL no disponible localmente (usar base de datos de cPanel)');
     return false;
   }
 }
