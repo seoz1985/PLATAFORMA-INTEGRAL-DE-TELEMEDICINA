@@ -1,25 +1,45 @@
 const express = require('express');
-const mongoose = require('mongoose');
+const mysql = require('mysql2/promise');
 const bodyParser = require('body-parser');
 
 const app = express();
 const port = process.env.PORT || 3000;
+
+// Configuración de MySQL
+const dbConfig = {
+  host: '127.0.0.1',
+  user: 'nabucom1_TELEMEDICINA2026',
+  password: 'Md85155435@1',
+  database: 'nabucom1_TELEMEDICINA2026'
+};
+
+// Crear pool de conexiones
+let pool;
+
+async function initDatabase() {
+  try {
+    pool = mysql.createPool(dbConfig);
+    const connection = await pool.getConnection();
+    console.log('✅ Conectado a MySQL');
+    connection.release();
+  } catch (err) {
+    console.error('❌ Error al conectar a MySQL:', err);
+  }
+}
+
+initDatabase();
 
 // Middleware
 app.use(bodyParser.json());
 
 // Ruta básica para probar el servidor
 app.get('/', (req, res) => {
-  res.send('¡El servidor está funcionando correctamente!');
+  res.send('¡El servidor está funcionando correctamente con MySQL!');
 });
 
-// Conexión a MongoDB Atlas
-mongoose.connect('mongodb+srv://meditelcolombia_db_user:Q80YVPb5t6vx6Q1p@cluster0.qznpbn8.mongodb.net/telemedicina?retryWrites=true&w=majority&appName=Cluster0')
-.then(() => {
-  console.log('✅ Conectado a MongoDB Atlas');
-}).catch((err) => {
-  console.error('❌ Error al conectar a MongoDB:', err);
-});
+// Exportar pool para usar en rutas
+app.locals.db = pool;
+
 const userRoutes = require('./routes/userRoutes');
 app.use('/api/usuarios', userRoutes);
 
